@@ -8,16 +8,24 @@ import {
 } from 'lucide-react';
 
 /* ---------- Brand palette ----------
-   Deep Stone   stone-900  #1c1917  headings, primary text
-   Pool Teal    teal-700   #0f766e  primary actions, brand accent, "trusted/adjusted" tag
-   Leaf Green   emerald-*  #047857  in-range / ok / trusted calibration
-   Sun Gold     amber-*    #b45309  low / caution / noisy calibration
-   Coral Red    red-*      #991b1b  high / alert / inconsistent calibration
-   Tide Orange  orange-*   #c2410c  calibration gone stale, needs re-verifying
-   Sand         stone-50   #fafaf9  app background, neutral surfaces
-   White        white      #ffffff  cards
-   Every status/trust color in the UI maps to one of these six accents —
-   no ad hoc hues outside this set.
+   Primary     Deep Ocean  #0B5FFF  primary actions, links, brand accents
+   Primary Dk  —           #094ED1  hover/active state for primary
+   Secondary   Aqua        #3CCFCF  secondary highlights, "developing" status
+   Accent      Coral       #FF7A59  low / caution / noisy / stale calibration
+   Accent Dk   —           #B3401F  accent text/icons (contrast-safe on white)
+   Alert       Crimson     #D64545  high / danger / inconsistent calibration
+   Alert Dk    —           #A3282A  alert text/icons (contrast-safe on white)
+   Success     Emerald     #27AE60  in-range / ok / trusted calibration
+   Success Dk  —           #1E8449  success text/icons (contrast-safe on white)
+   Background  Mist        #F5FAFC  app background
+   Surface     White       #FFFFFF  cards
+   Text        Navy        #17324D  headings, primary text (lighter via opacity
+                                     for secondary text, e.g. text-[#17324D]/55)
+   Border      Fog         #D7E3EA  hairlines, dividers
+   The "Dk" rows are contrast-safe derivatives of the marketing palette, not
+   separate brand colors — needed because Coral/Aqua/Emerald at full saturation
+   don't meet text contrast on white. Every status/trust color in the UI maps
+   to one of these — no ad hoc hues outside this set.
 ------------------------------------ */
 
 /* ---------- Constants ---------- */
@@ -75,10 +83,10 @@ function status(value, range) {
 }
 
 const STATUS_STYLES = {
-  ok:   { dot: 'bg-emerald-700', text: 'text-emerald-800', bg: 'bg-emerald-50',  ring: 'ring-emerald-200' },
-  low:  { dot: 'bg-amber-600',   text: 'text-amber-800',   bg: 'bg-amber-50',    ring: 'ring-amber-200' },
-  high: { dot: 'bg-red-800',     text: 'text-red-900',     bg: 'bg-red-50',      ring: 'ring-red-200' },
-  none: { dot: 'bg-stone-300',   text: 'text-stone-500',   bg: 'bg-stone-50',    ring: 'ring-stone-200' },
+  ok:   { dot: 'bg-[#27AE60]', text: 'text-[#1E8449]', bg: 'bg-[#27AE60]/10',  ring: 'ring-[#27AE60]/30' },
+  low:  { dot: 'bg-[#FF7A59]',   text: 'text-[#B3401F]',   bg: 'bg-[#FF7A59]/10',    ring: 'ring-[#FF7A59]/30' },
+  high: { dot: 'bg-[#D64545]',     text: 'text-[#A3282A]',     bg: 'bg-[#D64545]/10',      ring: 'ring-[#D64545]/30' },
+  none: { dot: 'bg-[#17324D]/25',   text: 'text-[#17324D]/55',   bg: 'bg-[#F5FAFC]',    ring: 'ring-[#17324D]/15' },
 };
 
 function fmt(v, p) {
@@ -177,13 +185,13 @@ function trustLevel(cal, param) {
 }
 
 const TRUST_INFO = {
-  trusted:      { label: 'Trusted',          color: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
-  stale:        { label: 'Re-verify',        color: 'bg-orange-100 text-orange-800 border-orange-200' },
-  developing:   { label: 'Developing',       color: 'bg-teal-100 text-teal-800 border-teal-200' },
-  noisy:        { label: 'High variance',    color: 'bg-amber-100 text-amber-800 border-amber-200' },
-  inconsistent: { label: 'Sign flipped',     color: 'bg-red-100 text-red-800 border-red-200' },
-  insufficient: { label: 'Need more pairs',  color: 'bg-stone-100 text-stone-600 border-stone-200' },
-  none:         { label: 'No data',          color: 'bg-stone-100 text-stone-500 border-stone-200' },
+  trusted:      { label: 'Trusted',          color: 'bg-[#27AE60]/15 text-[#1E8449] border-[#27AE60]/30' },
+  stale:        { label: 'Re-verify',        color: 'bg-[#FF7A59]/15 text-[#B3401F] border-[#FF7A59]/30' },
+  developing:   { label: 'Developing',       color: 'bg-[#3CCFCF]/20 text-[#0B5FFF] border-[#3CCFCF]/35' },
+  noisy:        { label: 'High variance',    color: 'bg-[#FF7A59]/15 text-[#B3401F] border-[#FF7A59]/30' },
+  inconsistent: { label: 'Sign flipped',     color: 'bg-[#D64545]/15 text-[#A3282A] border-[#D64545]/30' },
+  insufficient: { label: 'Need more pairs',  color: 'bg-[#17324D]/8 text-[#17324D]/70 border-[#D7E3EA]' },
+  none:         { label: 'No data',          color: 'bg-[#17324D]/8 text-[#17324D]/55 border-[#D7E3EA]' },
 };
 
 function adjustedValue(rawValue, cal, param) {
@@ -206,10 +214,10 @@ function RangeBar({ value, range, scale }) {
   const st = status(value, range);
   return (
     <div className="relative h-5 w-full">
-      <div className="absolute top-1/2 left-0 right-0 h-[3px] -translate-y-1/2 bg-stone-200 rounded-full" />
-      <div className="absolute top-1/2 h-[3px] -translate-y-1/2 bg-emerald-200 rounded-full"
+      <div className="absolute top-1/2 left-0 right-0 h-[3px] -translate-y-1/2 bg-[#17324D]/15 rounded-full" />
+      <div className="absolute top-1/2 h-[3px] -translate-y-1/2 bg-[#27AE60]/25 rounded-full"
            style={{ left: `${inStart}%`, width: `${inWidth}%` }} />
-      <div className="absolute top-1/2 h-[7px] w-px -translate-y-1/2 bg-emerald-700/60"
+      <div className="absolute top-1/2 h-[7px] w-px -translate-y-1/2 bg-[#27AE60]/60"
            style={{ left: `${targetPos}%` }} />
       {hasValue && (
         <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2" style={{ left: `${valuePos}%` }}>
@@ -227,25 +235,25 @@ function ParamRow({ p, value, range, adjusted }) {
     <div className="py-3">
       <div className="flex items-baseline justify-between mb-1.5">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-medium tracking-wider uppercase text-stone-500">{PARAMS[p].short}</span>
-          <span className="text-xs text-stone-400 hidden sm:inline">{PARAMS[p].label}</span>
+          <span className="text-xs font-medium tracking-wider uppercase text-[#17324D]/55">{PARAMS[p].short}</span>
+          <span className="text-xs text-[#17324D]/40 hidden sm:inline">{PARAMS[p].label}</span>
         </div>
         <div className="flex items-baseline gap-1.5">
           {adjusted != null && value != null && (
-            <span className="text-xs text-stone-400 font-mono tabular-nums line-through">
+            <span className="text-xs text-[#17324D]/40 font-mono tabular-nums line-through">
               {fmt(value, p)}
             </span>
           )}
           <span className={`font-mono text-lg tabular-nums ${STATUS_STYLES[st].text}`}>
             {fmt(displayValue, p)}
           </span>
-          {PARAMS[p].unit && <span className="text-xs text-stone-400">{PARAMS[p].unit}</span>}
+          {PARAMS[p].unit && <span className="text-xs text-[#17324D]/40">{PARAMS[p].unit}</span>}
         </div>
       </div>
       <RangeBar value={displayValue} range={range} scale={PARAMS[p].scale} />
       <div className="flex justify-between mt-1">
-        <span className="text-[10px] tabular-nums text-stone-400">{range.min}</span>
-        <span className="text-[10px] tabular-nums text-stone-400">{range.max}</span>
+        <span className="text-[10px] tabular-nums text-[#17324D]/40">{range.min}</span>
+        <span className="text-[10px] tabular-nums text-[#17324D]/40">{range.max}</span>
       </div>
     </div>
   );
@@ -256,9 +264,9 @@ function ParamRow({ p, value, range, adjusted }) {
 function StatusCard({ latest, targets, calibrations }) {
   if (!latest) {
     return (
-      <div className="bg-white border border-stone-200 rounded-lg p-6 text-center">
-        <Droplets className="w-8 h-8 mx-auto text-stone-300 mb-2" />
-        <p className="text-sm text-stone-500">No readings yet. Log your first test to begin.</p>
+      <div className="bg-white border border-[#D7E3EA] rounded-lg p-6 text-center">
+        <Droplets className="w-8 h-8 mx-auto text-[#17324D]/25 mb-2" />
+        <p className="text-sm text-[#17324D]/55">No readings yet. Log your first test to begin.</p>
       </div>
     );
   }
@@ -276,50 +284,50 @@ function StatusCard({ latest, targets, calibrations }) {
   const ccWarn = cc != null && cc > 0.5;
 
   return (
-    <div className="bg-white border border-stone-200 rounded-lg overflow-hidden">
-      <div className="px-5 py-4 border-b border-stone-100 flex items-center justify-between">
+    <div className="bg-white border border-[#D7E3EA] rounded-lg overflow-hidden">
+      <div className="px-5 py-4 border-b border-[#D7E3EA] flex items-center justify-between">
         <div>
-          <div className="text-[11px] uppercase tracking-wider text-stone-400 mb-0.5">Last reading</div>
+          <div className="text-[11px] uppercase tracking-wider text-[#17324D]/40 mb-0.5">Last reading</div>
           <div className="flex items-baseline gap-2 flex-wrap">
-            <span className="text-sm font-medium text-stone-900">{relTime(latest.timestamp)}</span>
-            <span className="text-xs text-stone-500">· {sourceLabel(latest.source)}</span>
+            <span className="text-sm font-medium text-[#17324D]">{relTime(latest.timestamp)}</span>
+            <span className="text-xs text-[#17324D]/55">· {sourceLabel(latest.source)}</span>
             {usesAdjusted && (
-              <span className="text-[10px] uppercase tracking-wider bg-teal-50 text-teal-700 border border-teal-200 px-1.5 py-0.5 rounded">
+              <span className="text-[10px] uppercase tracking-wider bg-[#3CCFCF]/10 text-[#0B5FFF] border border-[#3CCFCF]/35 px-1.5 py-0.5 rounded">
                 Adjusted
               </span>
             )}
           </div>
         </div>
         {issues.length === 0 ? (
-          <div className="flex items-center gap-1.5 text-emerald-700 text-xs font-medium">
+          <div className="flex items-center gap-1.5 text-[#1E8449] text-xs font-medium">
             <CheckCircle2 className="w-4 h-4" />
             All in range
           </div>
         ) : (
-          <div className="flex items-center gap-1.5 text-amber-800 text-xs font-medium">
+          <div className="flex items-center gap-1.5 text-[#B3401F] text-xs font-medium">
             <AlertCircle className="w-4 h-4" />
             {issues.length} out of range
           </div>
         )}
       </div>
-      <div className="px-5 divide-y divide-stone-100">
+      <div className="px-5 divide-y divide-[#D7E3EA]">
         {PARAM_KEYS.map(p => {
           const adj = usesAdjusted ? adjustedValue(latest[p], srcCal?.[p], p) : null;
           return <ParamRow key={p} p={p} value={latest[p]} adjusted={adj} range={targets[p]} />;
         })}
       </div>
       {cc != null && (
-        <div className={`px-5 py-3 border-t flex items-center justify-between text-xs ${ccWarn ? 'bg-amber-50 border-amber-200' : 'bg-stone-50 border-stone-100'}`}>
-          <span className={ccWarn ? 'text-amber-900' : 'text-stone-600'}>
+        <div className={`px-5 py-3 border-t flex items-center justify-between text-xs ${ccWarn ? 'bg-[#FF7A59]/10 border-[#FF7A59]/30' : 'bg-[#F5FAFC] border-[#D7E3EA]'}`}>
+          <span className={ccWarn ? 'text-[#B3401F]' : 'text-[#17324D]/70'}>
             Combined chlorine (TC − FC)
           </span>
-          <span className={`font-mono tabular-nums font-medium ${ccWarn ? 'text-amber-900' : 'text-stone-700'}`}>
+          <span className={`font-mono tabular-nums font-medium ${ccWarn ? 'text-[#B3401F]' : 'text-[#17324D]/80'}`}>
             {cc.toFixed(2)} ppm {ccWarn && '· high'}
           </span>
         </div>
       )}
       {usesAdjusted && (
-        <div className="px-5 py-2.5 bg-teal-50/50 border-t border-teal-100 text-[11px] text-teal-800">
+        <div className="px-5 py-2.5 bg-[#3CCFCF]/8 border-t border-[#3CCFCF]/25 text-[11px] text-[#0B5FFF]">
           Values shown adjusted to pool-store equivalent using calibration data. Raw reading struck through.
         </div>
       )}
@@ -400,23 +408,23 @@ function EntryForm({ onSave, onCancel, calibrations }) {
   const hasAny = PARAM_KEYS.some(p => values[p] != null && values[p] !== '');
 
   return (
-    <div className="bg-white border border-stone-200 rounded-lg p-5">
+    <div className="bg-white border border-[#D7E3EA] rounded-lg p-5">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-base font-semibold text-stone-900">New reading</h2>
-        <button onClick={onCancel} className="p-1 text-stone-400 hover:text-stone-600">
+        <h2 className="text-base font-semibold text-[#17324D]">New reading</h2>
+        <button onClick={onCancel} className="p-1 text-[#17324D]/40 hover:text-[#17324D]/70">
           <X className="w-4 h-4" />
         </button>
       </div>
-      <div className="mb-4 p-3 bg-gradient-to-br from-teal-50 to-stone-50 border border-teal-200 rounded-lg">
+      <div className="mb-4 p-3 bg-gradient-to-br from-[#3CCFCF]/10 to-[#F5FAFC] border border-[#3CCFCF]/35 rounded-lg">
         {extracting ? (
-          <div className="flex items-center justify-center gap-2 text-sm text-teal-800 py-2">
+          <div className="flex items-center justify-center gap-2 text-sm text-[#0B5FFF] py-2">
             <RefreshCw className="w-4 h-4 animate-spin" />
             Reading values from photo…
           </div>
         ) : (
           <>
             <div className="flex gap-2">
-              <label className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-white border border-teal-300 rounded-md text-sm font-medium text-teal-800 hover:bg-teal-50 cursor-pointer transition-colors">
+              <label className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-white border border-[#3CCFCF]/45 rounded-md text-sm font-medium text-[#0B5FFF] hover:bg-[#3CCFCF]/10 cursor-pointer transition-colors">
                 <Camera className="w-4 h-4" />
                 Take photo
                 <input
@@ -427,7 +435,7 @@ function EntryForm({ onSave, onCancel, calibrations }) {
                   className="hidden"
                 />
               </label>
-              <label className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-white border border-teal-300 rounded-md text-sm font-medium text-teal-800 hover:bg-teal-50 cursor-pointer transition-colors">
+              <label className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-white border border-[#3CCFCF]/45 rounded-md text-sm font-medium text-[#0B5FFF] hover:bg-[#3CCFCF]/10 cursor-pointer transition-colors">
                 <Image className="w-4 h-4" />
                 Choose photo
                 <input
@@ -438,11 +446,11 @@ function EntryForm({ onSave, onCancel, calibrations }) {
                 />
               </label>
             </div>
-            <p className="text-[11px] text-stone-500 text-center mt-1.5">
+            <p className="text-[11px] text-[#17324D]/55 text-center mt-1.5">
               Photometer screen, HydroComm app, pool store printout, or test strip
             </p>
             {extractedFrom && (
-              <div className="mt-2 px-2 py-1.5 bg-emerald-50 border border-emerald-200 rounded text-[11px] text-emerald-800 flex items-start gap-1.5">
+              <div className="mt-2 px-2 py-1.5 bg-[#27AE60]/10 border border-[#27AE60]/30 rounded text-[11px] text-[#1E8449] flex items-start gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0 mt-px" />
                 <span>
                   Read {extractedFrom.count} value{extractedFrom.count === 1 ? '' : 's'} from photo · {extractedFrom.confidence} confidence · review and adjust below before saving
@@ -450,7 +458,7 @@ function EntryForm({ onSave, onCancel, calibrations }) {
               </div>
             )}
             {extractError && (
-              <div className="mt-2 px-2 py-1.5 bg-red-50 border border-red-200 rounded text-[11px] text-red-800">
+              <div className="mt-2 px-2 py-1.5 bg-[#D64545]/10 border border-[#D64545]/30 rounded text-[11px] text-[#A3282A]">
                 {extractError}
               </div>
             )}
@@ -460,18 +468,18 @@ function EntryForm({ onSave, onCancel, calibrations }) {
 
       <div className="space-y-3 mb-4">
         <div>
-          <label className="block text-xs font-medium text-stone-600 mb-1">Source</label>
+          <label className="block text-xs font-medium text-[#17324D]/70 mb-1">Source</label>
           <select value={source} onChange={e => setSource(e.target.value)}
-            className="w-full px-3 py-2 text-sm bg-stone-50 border border-stone-200 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-600">
+            className="w-full px-3 py-2 text-sm bg-[#F5FAFC] border border-[#D7E3EA] rounded-md focus:outline-none focus:ring-2 focus:ring-[#0B5FFF]">
             {SOURCES.map(s => (
               <option key={s.value} value={s.value}>{s.label}{s.isReference ? ' — reference' : ''}</option>
             ))}
           </select>
         </div>
         <div>
-          <label className="block text-xs font-medium text-stone-600 mb-1">When</label>
+          <label className="block text-xs font-medium text-[#17324D]/70 mb-1">When</label>
           <input type="datetime-local" value={when} onChange={e => setWhen(e.target.value)}
-            className="w-full px-3 py-2 text-sm bg-stone-50 border border-stone-200 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-600" />
+            className="w-full px-3 py-2 text-sm bg-[#F5FAFC] border border-[#D7E3EA] rounded-md focus:outline-none focus:ring-2 focus:ring-[#0B5FFF]" />
         </div>
       </div>
       <div className="space-y-2 mb-4">
@@ -482,17 +490,17 @@ function EntryForm({ onSave, onCancel, calibrations }) {
           return (
             <div key={p}>
               <div className="flex items-center gap-3">
-                <label className="w-12 text-xs font-medium text-stone-500 uppercase tracking-wider">{PARAMS[p].short}</label>
+                <label className="w-12 text-xs font-medium text-[#17324D]/55 uppercase tracking-wider">{PARAMS[p].short}</label>
                 <input type="number" inputMode="decimal" step={PARAMS[p].step}
                   value={values[p] ?? ''} onChange={e => update(p, e.target.value)} placeholder="—"
-                  className="flex-1 px-3 py-2 text-sm font-mono tabular-nums bg-stone-50 border border-stone-200 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-600" />
-                <span className="w-8 text-xs text-stone-400">{PARAMS[p].unit}</span>
+                  className="flex-1 px-3 py-2 text-sm font-mono tabular-nums bg-[#F5FAFC] border border-[#D7E3EA] rounded-md focus:outline-none focus:ring-2 focus:ring-[#0B5FFF]" />
+                <span className="w-8 text-xs text-[#17324D]/40">{PARAMS[p].unit}</span>
               </div>
               {adj != null && (
-                <div className="ml-[3.75rem] mt-1 text-[11px] text-teal-700 flex items-center gap-1">
+                <div className="ml-[3.75rem] mt-1 text-[11px] text-[#0B5FFF] flex items-center gap-1">
                   <ArrowRight className="w-3 h-3" />
                   ≈ <span className="font-mono tabular-nums font-medium">{fmt(adj, p)}</span>
-                  <span className="text-stone-400">pool-store equiv ({fmtOffset(cal.meanOffset, p)} offset, n={cal.n})</span>
+                  <span className="text-[#17324D]/40">pool-store equiv ({fmtOffset(cal.meanOffset, p)} offset, n={cal.n})</span>
                 </div>
               )}
             </div>
@@ -500,23 +508,23 @@ function EntryForm({ onSave, onCancel, calibrations }) {
         })}
       </div>
       <div className="mb-4">
-        <label className="block text-xs font-medium text-stone-600 mb-1">Notes</label>
+        <label className="block text-xs font-medium text-[#17324D]/70 mb-1">Notes</label>
         <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={2}
           placeholder="Optional — weather, recent dosing, observations…"
-          className="w-full px-3 py-2 text-sm bg-stone-50 border border-stone-200 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-600 resize-none" />
+          className="w-full px-3 py-2 text-sm bg-[#F5FAFC] border border-[#D7E3EA] rounded-md focus:outline-none focus:ring-2 focus:ring-[#0B5FFF] resize-none" />
       </div>
       {isReference(source) && (
-        <div className="mb-4 px-3 py-2 bg-teal-50 border border-teal-200 rounded text-xs text-teal-900 flex gap-2">
+        <div className="mb-4 px-3 py-2 bg-[#3CCFCF]/10 border border-[#3CCFCF]/35 rounded text-xs text-[#0B5FFF] flex gap-2">
           <Beaker className="w-4 h-4 flex-shrink-0 mt-0.5" />
           <span>Saving this as a reference reading will create calibration pairs with any device readings logged within {PAIR_WINDOW_HOURS}h.</span>
         </div>
       )}
       <div className="flex gap-2">
         <button onClick={save} disabled={!hasAny}
-          className="flex-1 px-4 py-2.5 bg-teal-700 text-white text-sm font-medium rounded-md hover:bg-teal-800 disabled:bg-stone-200 disabled:text-stone-400 disabled:cursor-not-allowed">
+          className="flex-1 px-4 py-2.5 bg-[#0B5FFF] text-white text-sm font-medium rounded-md hover:bg-[#094ED1] disabled:bg-[#17324D]/15 disabled:text-[#17324D]/40 disabled:cursor-not-allowed">
           Save reading
         </button>
-        <button onClick={onCancel} className="px-4 py-2.5 text-stone-600 text-sm font-medium hover:bg-stone-100 rounded-md">
+        <button onClick={onCancel} className="px-4 py-2.5 text-[#17324D]/70 text-sm font-medium hover:bg-[#17324D]/8 rounded-md">
           Cancel
         </button>
       </div>
@@ -532,12 +540,12 @@ function CalibrationCard({ calibrations, latestBySource }) {
 
   if (sources.length === 0) {
     return (
-      <div className="bg-white border border-stone-200 rounded-lg p-5">
+      <div className="bg-white border border-[#D7E3EA] rounded-lg p-5">
         <div className="flex items-center gap-2 mb-2">
-          <Beaker className="w-4 h-4 text-stone-400" />
-          <h2 className="text-base font-semibold text-stone-900">Device calibration</h2>
+          <Beaker className="w-4 h-4 text-[#17324D]/40" />
+          <h2 className="text-base font-semibold text-[#17324D]">Device calibration</h2>
         </div>
-        <p className="text-sm text-stone-500">
+        <p className="text-sm text-[#17324D]/55">
           Log a pool store reading and at least one device reading within {PAIR_WINDOW_HOURS}h to start building calibration offsets.
         </p>
       </div>
@@ -545,17 +553,17 @@ function CalibrationCard({ calibrations, latestBySource }) {
   }
 
   return (
-    <div className="bg-white border border-stone-200 rounded-lg overflow-hidden">
-      <button onClick={() => setOpen(!open)} className="w-full px-5 py-4 flex items-center justify-between hover:bg-stone-50">
+    <div className="bg-white border border-[#D7E3EA] rounded-lg overflow-hidden">
+      <button onClick={() => setOpen(!open)} className="w-full px-5 py-4 flex items-center justify-between hover:bg-[#F5FAFC]">
         <div className="flex items-center gap-2">
-          <Beaker className="w-4 h-4 text-stone-500" />
-          <span className="text-sm font-medium text-stone-900">Device calibration</span>
-          <span className="text-xs text-stone-500">vs pool store</span>
+          <Beaker className="w-4 h-4 text-[#17324D]/55" />
+          <span className="text-sm font-medium text-[#17324D]">Device calibration</span>
+          <span className="text-xs text-[#17324D]/55">vs pool store</span>
         </div>
-        {open ? <ChevronUp className="w-4 h-4 text-stone-400" /> : <ChevronDown className="w-4 h-4 text-stone-400" />}
+        {open ? <ChevronUp className="w-4 h-4 text-[#17324D]/40" /> : <ChevronDown className="w-4 h-4 text-[#17324D]/40" />}
       </button>
       {open && (
-        <div className="border-t border-stone-100 divide-y divide-stone-100">
+        <div className="border-t border-[#D7E3EA] divide-y divide-[#D7E3EA]">
           {sources.map(src => (
             <DeviceCalibrationSection key={src} source={src} cal={calibrations[src]} latestReading={latestBySource[src]} />
           ))}
@@ -569,7 +577,7 @@ function DeviceCalibrationSection({ source, cal, latestReading }) {
   const params = PARAM_KEYS.filter(p => cal[p] && cal[p].n > 0);
   return (
     <div className="px-5 py-4">
-      <div className="text-sm font-medium text-stone-800 mb-3">{sourceLabel(source)}</div>
+      <div className="text-sm font-medium text-[#17324D]/90 mb-3">{sourceLabel(source)}</div>
       <div className="space-y-2.5">
         {params.map(p => {
           const c = cal[p];
@@ -579,29 +587,29 @@ function DeviceCalibrationSection({ source, cal, latestReading }) {
           const latestAdj = latestRaw != null ? adjustedValue(latestRaw, c, p) : null;
           return (
             <div key={p} className="grid grid-cols-12 gap-2 items-center text-xs">
-              <div className="col-span-1 font-medium text-stone-700 uppercase tracking-wider">{PARAMS[p].short}</div>
+              <div className="col-span-1 font-medium text-[#17324D]/80 uppercase tracking-wider">{PARAMS[p].short}</div>
               <div className="col-span-4 flex items-baseline gap-1 font-mono tabular-nums">
                 {latestRaw != null ? (
                   <>
-                    <span className="text-stone-700">{fmt(latestRaw, p)}</span>
+                    <span className="text-[#17324D]/80">{fmt(latestRaw, p)}</span>
                     {latestAdj != null ? (
                       <>
-                        <ArrowRight className="w-3 h-3 text-stone-400 self-center" />
-                        <span className="text-teal-700 font-semibold">{fmt(latestAdj, p)}</span>
+                        <ArrowRight className="w-3 h-3 text-[#17324D]/40 self-center" />
+                        <span className="text-[#0B5FFF] font-semibold">{fmt(latestAdj, p)}</span>
                       </>
                     ) : (
-                      <span className="text-stone-400 text-[10px]">no adj</span>
+                      <span className="text-[#17324D]/40 text-[10px]">no adj</span>
                     )}
                   </>
                 ) : (
-                  <span className="text-stone-400">— last reading</span>
+                  <span className="text-[#17324D]/40">— last reading</span>
                 )}
               </div>
-              <div className="col-span-3 font-mono tabular-nums text-stone-600">
+              <div className="col-span-3 font-mono tabular-nums text-[#17324D]/70">
                 offset {fmtOffset(c.meanOffset, p)}
-                {c.n >= 2 && <span className="text-stone-400"> ±{fmt(c.stdDev, p)}</span>}
+                {c.n >= 2 && <span className="text-[#17324D]/40"> ±{fmt(c.stdDev, p)}</span>}
               </div>
-              <div className="col-span-1 font-mono tabular-nums text-stone-500">n={c.n}</div>
+              <div className="col-span-1 font-mono tabular-nums text-[#17324D]/55">n={c.n}</div>
               <div className={`col-span-3 text-[10px] uppercase tracking-wider border rounded px-1.5 py-0.5 text-center ${ti.color}`}>
                 {ti.label}
               </div>
@@ -786,49 +794,49 @@ function AIAnalysisCard({ readings, targets, calibrations }) {
   const noData = readings.length === 0;
 
   return (
-    <div className="bg-gradient-to-br from-teal-50 to-stone-50 border border-teal-200 rounded-lg p-5">
+    <div className="bg-gradient-to-br from-[#3CCFCF]/10 to-[#F5FAFC] border border-[#3CCFCF]/35 rounded-lg p-5">
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-teal-700" />
-          <h2 className="text-base font-semibold text-stone-900">Calibration analysis</h2>
+          <Sparkles className="w-4 h-4 text-[#0B5FFF]" />
+          <h2 className="text-base font-semibold text-[#17324D]">Calibration analysis</h2>
         </div>
         {analysis && (
-          <span className="text-[10px] text-stone-500">{relTime(analysis.timestamp)}</span>
+          <span className="text-[10px] text-[#17324D]/55">{relTime(analysis.timestamp)}</span>
         )}
       </div>
 
       {!analysis && !loading && (
-        <p className="text-sm text-stone-600 mb-3">
+        <p className="text-sm text-[#17324D]/70 mb-3">
           Get an AI assessment of your calibration: which device readings can be trusted with offsets applied, which need more paired data, and whether you should take water to the pool store.
         </p>
       )}
 
       {loading && (
-        <div className="flex items-center gap-2 text-sm text-stone-500 py-4">
+        <div className="flex items-center gap-2 text-sm text-[#17324D]/55 py-4">
           <RefreshCw className="w-4 h-4 animate-spin" />
           Analyzing your data…
         </div>
       )}
 
       {analysis && !loading && (
-        <div className="text-sm text-stone-700 whitespace-pre-wrap leading-relaxed mb-3">
+        <div className="text-sm text-[#17324D]/80 whitespace-pre-wrap leading-relaxed mb-3">
           {analysis.text}
         </div>
       )}
 
       {error && (
-        <div className="text-sm text-red-700 bg-red-50 border border-red-200 rounded p-2 mb-3">
+        <div className="text-sm text-[#A3282A] bg-[#D64545]/10 border border-[#D64545]/30 rounded p-2 mb-3">
           {error}
         </div>
       )}
 
       <button onClick={run} disabled={loading || noData}
-        className="flex items-center gap-1.5 px-3 py-1.5 bg-teal-700 text-white text-xs font-medium rounded-md hover:bg-teal-800 disabled:bg-stone-200 disabled:text-stone-400">
+        className="flex items-center gap-1.5 px-3 py-1.5 bg-[#0B5FFF] text-white text-xs font-medium rounded-md hover:bg-[#094ED1] disabled:bg-[#17324D]/15 disabled:text-[#17324D]/40">
         {analysis ? <RefreshCw className="w-3.5 h-3.5" /> : <Sparkles className="w-3.5 h-3.5" />}
         {analysis ? 'Refresh analysis' : 'Run analysis'}
       </button>
       {noData && (
-        <span className="ml-2 text-xs text-stone-500">Log a reading first.</span>
+        <span className="ml-2 text-xs text-[#17324D]/55">Log a reading first.</span>
       )}
     </div>
   );
@@ -846,36 +854,36 @@ function HistoryRow({ reading, targets, calibrations, onDelete, expanded, onTogg
   }).filter(x => x.st === 'low' || x.st === 'high');
 
   return (
-    <div className="border-b border-stone-100 last:border-b-0">
-      <button onClick={onToggle} className="w-full px-5 py-3 text-left hover:bg-stone-50 flex items-center justify-between">
+    <div className="border-b border-[#D7E3EA] last:border-b-0">
+      <button onClick={onToggle} className="w-full px-5 py-3 text-left hover:bg-[#F5FAFC] flex items-center justify-between">
         <div className="flex-1 min-w-0">
           <div className="flex items-baseline gap-2 flex-wrap">
-            <span className="text-sm font-medium text-stone-900">
+            <span className="text-sm font-medium text-[#17324D]">
               {new Date(reading.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
             </span>
-            <span className="text-xs text-stone-500">
+            <span className="text-xs text-[#17324D]/55">
               {new Date(reading.timestamp).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}
             </span>
-            <span className={`text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded ${isReference(reading.source) ? 'bg-teal-100 text-teal-800' : 'bg-stone-100 text-stone-600'}`}>
+            <span className={`text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded ${isReference(reading.source) ? 'bg-[#3CCFCF]/20 text-[#0B5FFF]' : 'bg-[#17324D]/8 text-[#17324D]/70'}`}>
               {isReference(reading.source) ? 'Ref' : `T${sourceTier(reading.source)}`}
             </span>
           </div>
-          <div className="text-xs text-stone-500 mt-0.5 truncate">{sourceLabel(reading.source)}</div>
+          <div className="text-xs text-[#17324D]/55 mt-0.5 truncate">{sourceLabel(reading.source)}</div>
         </div>
         <div className="flex items-center gap-2">
           {issues.length === 0 ? (
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <CheckCircle2 className="w-4 h-4 text-[#1E8449]" />
           ) : (
-            <span className="flex items-center gap-1 text-xs text-amber-700">
+            <span className="flex items-center gap-1 text-xs text-[#B3401F]">
               <AlertCircle className="w-3.5 h-3.5" />
               {issues.length}
             </span>
           )}
-          {expanded ? <ChevronUp className="w-4 h-4 text-stone-400" /> : <ChevronDown className="w-4 h-4 text-stone-400" />}
+          {expanded ? <ChevronUp className="w-4 h-4 text-[#17324D]/40" /> : <ChevronDown className="w-4 h-4 text-[#17324D]/40" />}
         </div>
       </button>
       {expanded && (
-        <div className="px-5 pb-4 bg-stone-50/50">
+        <div className="px-5 pb-4 bg-[#17324D]/5">
           <div className="grid grid-cols-3 gap-3 mb-3">
             {PARAM_KEYS.map(p => {
               const adj = usesAdjusted ? adjustedValue(reading[p], srcCal?.[p], p) : null;
@@ -883,24 +891,24 @@ function HistoryRow({ reading, targets, calibrations, onDelete, expanded, onTogg
               const st = status(eff, targets[p]);
               return (
                 <div key={p} className="text-center">
-                  <div className="text-[10px] uppercase tracking-wider text-stone-500 mb-0.5">{PARAMS[p].short}</div>
+                  <div className="text-[10px] uppercase tracking-wider text-[#17324D]/55 mb-0.5">{PARAMS[p].short}</div>
                   <div className={`text-base font-mono tabular-nums ${STATUS_STYLES[st].text}`}>
                     {fmt(reading[p], p)}
                   </div>
                   {adj != null && (
-                    <div className="text-[10px] text-teal-700 font-mono tabular-nums">→ {fmt(adj, p)}</div>
+                    <div className="text-[10px] text-[#0B5FFF] font-mono tabular-nums">→ {fmt(adj, p)}</div>
                   )}
                 </div>
               );
             })}
           </div>
           {reading.notes && (
-            <div className="text-xs text-stone-600 italic pt-2 border-t border-stone-200 mb-2">
+            <div className="text-xs text-[#17324D]/70 italic pt-2 border-t border-[#D7E3EA] mb-2">
               {reading.notes}
             </div>
           )}
           <button onClick={() => onDelete(reading.id)}
-            className="flex items-center gap-1.5 text-xs text-red-700 hover:text-red-900 mt-2">
+            className="flex items-center gap-1.5 text-xs text-[#A3282A] hover:text-[#A3282A] mt-2">
             <Trash2 className="w-3.5 h-3.5" />
             Delete reading
           </button>
@@ -932,20 +940,20 @@ function Trends({ readings, targets }) {
   if (readings.length === 0) return null;
 
   return (
-    <div className="bg-white border border-stone-200 rounded-lg p-5">
-      <h2 className="text-base font-semibold text-stone-900 mb-4">Trend</h2>
+    <div className="bg-white border border-[#D7E3EA] rounded-lg p-5">
+      <h2 className="text-base font-semibold text-[#17324D] mb-4">Trend</h2>
       <div className="flex flex-wrap gap-1.5 mb-4">
         {PARAM_KEYS.map(p => (
           <button key={p} onClick={() => setSelectedParam(p)}
             className={`px-2.5 py-1 text-xs font-medium rounded transition-colors ${
-              selectedParam === p ? 'bg-stone-900 text-white' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+              selectedParam === p ? 'bg-[#17324D] text-white' : 'bg-[#17324D]/8 text-[#17324D]/70 hover:bg-[#17324D]/15'
             }`}>
             {PARAMS[p].short}
           </button>
         ))}
       </div>
       {chartData.length === 0 ? (
-        <div className="h-48 flex items-center justify-center text-sm text-stone-400">
+        <div className="h-48 flex items-center justify-center text-sm text-[#17324D]/40">
           No data for {PARAMS[selectedParam].short}
         </div>
       ) : (
@@ -962,7 +970,7 @@ function Trends({ readings, targets }) {
           </LineChart>
         </ResponsiveContainer>
       )}
-      <div className="text-[10px] text-stone-400 mt-2 text-center">
+      <div className="text-[10px] text-[#17324D]/40 mt-2 text-center">
         Shaded band shows in-range target ({range.min}–{range.max} {PARAMS[selectedParam].unit})
       </div>
     </div>
@@ -1012,47 +1020,47 @@ function TargetsEditor({ targets, onSave }) {
   };
 
   return (
-    <div className="bg-white border border-stone-200 rounded-lg overflow-hidden">
+    <div className="bg-white border border-[#D7E3EA] rounded-lg overflow-hidden">
       <button onClick={() => setEditing(!editing)}
-        className="w-full px-5 py-4 flex items-center justify-between hover:bg-stone-50">
+        className="w-full px-5 py-4 flex items-center justify-between hover:bg-[#F5FAFC]">
         <div className="flex items-center gap-2">
-          <Pencil className="w-4 h-4 text-stone-400" />
-          <span className="text-sm font-medium text-stone-900">Target ranges</span>
+          <Pencil className="w-4 h-4 text-[#17324D]/40" />
+          <span className="text-sm font-medium text-[#17324D]">Target ranges</span>
         </div>
-        {editing ? <ChevronUp className="w-4 h-4 text-stone-400" /> : <ChevronDown className="w-4 h-4 text-stone-400" />}
+        {editing ? <ChevronUp className="w-4 h-4 text-[#17324D]/40" /> : <ChevronDown className="w-4 h-4 text-[#17324D]/40" />}
       </button>
       {editing && (
-        <div className="px-5 pb-5 border-t border-stone-100">
-          <p className="text-xs text-stone-500 mt-3 mb-4">
+        <div className="px-5 pb-5 border-t border-[#D7E3EA]">
+          <p className="text-xs text-[#17324D]/55 mt-3 mb-4">
             Edit your in-range bounds and target values per parameter.
           </p>
           <div className="space-y-3">
-            <div className="grid grid-cols-4 gap-2 text-[10px] uppercase tracking-wider text-stone-400 px-1">
+            <div className="grid grid-cols-4 gap-2 text-[10px] uppercase tracking-wider text-[#17324D]/40 px-1">
               <span></span><span className="text-center">Min</span><span className="text-center">Target</span><span className="text-center">Max</span>
             </div>
             {PARAM_KEYS.map(p => (
               <div key={p} className="grid grid-cols-4 gap-2 items-center">
-                <span className="text-xs font-medium text-stone-700 uppercase tracking-wider">{PARAMS[p].short}</span>
+                <span className="text-xs font-medium text-[#17324D]/80 uppercase tracking-wider">{PARAMS[p].short}</span>
                 {['min', 'target', 'max'].map((f, i) => (
                   <input key={f} type="number" step={PARAMS[p].step} value={local[p][f]}
                     onChange={e => update(p, f, e.target.value)}
-                    className={`px-2 py-1.5 text-sm font-mono tabular-nums border rounded text-center focus:outline-none focus:ring-1 focus:ring-teal-600 ${
-                      f === 'target' ? 'bg-teal-50 border-teal-200' : 'bg-stone-50 border-stone-200'
+                    className={`px-2 py-1.5 text-sm font-mono tabular-nums border rounded text-center focus:outline-none focus:ring-1 focus:ring-[#0B5FFF] ${
+                      f === 'target' ? 'bg-[#3CCFCF]/10 border-[#3CCFCF]/35' : 'bg-[#F5FAFC] border-[#D7E3EA]'
                     }`} />
                 ))}
               </div>
             ))}
           </div>
           {error && (
-            <p className="text-xs text-red-700 bg-red-50 border border-red-200 rounded px-2 py-1.5 mt-3">{error}</p>
+            <p className="text-xs text-[#A3282A] bg-[#D64545]/10 border border-[#D64545]/30 rounded px-2 py-1.5 mt-3">{error}</p>
           )}
           <div className="flex gap-2 mt-5">
             <button onClick={save} disabled={!!error}
-              className="flex-1 px-4 py-2 bg-teal-700 text-white text-sm font-medium rounded-md hover:bg-teal-800 disabled:bg-stone-200 disabled:text-stone-400 disabled:cursor-not-allowed">
+              className="flex-1 px-4 py-2 bg-[#0B5FFF] text-white text-sm font-medium rounded-md hover:bg-[#094ED1] disabled:bg-[#17324D]/15 disabled:text-[#17324D]/40 disabled:cursor-not-allowed">
               Save targets
             </button>
             <button onClick={() => setLocal(targetsToStrings(DEFAULT_TARGETS))}
-              className="px-4 py-2 text-stone-600 text-sm font-medium hover:bg-stone-100 rounded-md">
+              className="px-4 py-2 text-[#17324D]/70 text-sm font-medium hover:bg-[#17324D]/8 rounded-md">
               Reset defaults
             </button>
           </div>
@@ -1120,39 +1128,39 @@ function BackupCard({ readings, targets, onRestore }) {
   };
 
   return (
-    <div className="bg-white border border-stone-200 rounded-lg overflow-hidden">
-      <button onClick={() => setOpen(!open)} className="w-full px-5 py-4 flex items-center justify-between hover:bg-stone-50">
+    <div className="bg-white border border-[#D7E3EA] rounded-lg overflow-hidden">
+      <button onClick={() => setOpen(!open)} className="w-full px-5 py-4 flex items-center justify-between hover:bg-[#F5FAFC]">
         <div className="flex items-center gap-2">
-          <Download className="w-4 h-4 text-stone-400" />
-          <span className="text-sm font-medium text-stone-900">Backup &amp; restore</span>
+          <Download className="w-4 h-4 text-[#17324D]/40" />
+          <span className="text-sm font-medium text-[#17324D]">Backup &amp; restore</span>
         </div>
-        {open ? <ChevronUp className="w-4 h-4 text-stone-400" /> : <ChevronDown className="w-4 h-4 text-stone-400" />}
+        {open ? <ChevronUp className="w-4 h-4 text-[#17324D]/40" /> : <ChevronDown className="w-4 h-4 text-[#17324D]/40" />}
       </button>
       {open && (
-        <div className="px-5 pb-5 border-t border-stone-100">
-          <p className="text-xs text-stone-500 mt-3 mb-4">
+        <div className="px-5 pb-5 border-t border-[#D7E3EA]">
+          <p className="text-xs text-[#17324D]/55 mt-3 mb-4">
             Download a backup occasionally so your readings aren't only ever stored in one place. Restoring replaces current readings and targets with the backup's contents.
           </p>
           <div className="flex gap-2">
             <button onClick={() => downloadBackup(readings, targets)} disabled={readings.length === 0}
-              className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 bg-teal-700 text-white text-sm font-medium rounded-md hover:bg-teal-800 disabled:bg-stone-200 disabled:text-stone-400 disabled:cursor-not-allowed">
+              className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 bg-[#0B5FFF] text-white text-sm font-medium rounded-md hover:bg-[#094ED1] disabled:bg-[#17324D]/15 disabled:text-[#17324D]/40 disabled:cursor-not-allowed">
               <Download className="w-4 h-4" />
               Download backup
             </button>
-            <label className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 border border-stone-200 text-stone-700 text-sm font-medium rounded-md hover:bg-stone-50 cursor-pointer">
+            <label className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 border border-[#D7E3EA] text-[#17324D]/80 text-sm font-medium rounded-md hover:bg-[#F5FAFC] cursor-pointer">
               <Upload className="w-4 h-4" />
               Restore from file
               <input type="file" accept="application/json" onChange={handleFile} className="hidden" />
             </label>
           </div>
           {restored && (
-            <div className="mt-3 px-2 py-1.5 bg-emerald-50 border border-emerald-200 rounded text-[11px] text-emerald-800 flex items-center gap-1.5">
+            <div className="mt-3 px-2 py-1.5 bg-[#27AE60]/10 border border-[#27AE60]/30 rounded text-[11px] text-[#1E8449] flex items-center gap-1.5">
               <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
               Restored {restored.count} reading{restored.count === 1 ? '' : 's'} from backup.
             </div>
           )}
           {error && (
-            <div className="mt-3 px-2 py-1.5 bg-red-50 border border-red-200 rounded text-[11px] text-red-800">
+            <div className="mt-3 px-2 py-1.5 bg-[#D64545]/10 border border-[#D64545]/30 rounded text-[11px] text-[#A3282A]">
               {error}
             </div>
           )}
@@ -1223,31 +1231,31 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-stone-50 flex items-center justify-center">
-        <Droplets className="w-6 h-6 text-stone-300 animate-pulse" />
+      <div className="min-h-screen bg-[#F5FAFC] flex items-center justify-center">
+        <Droplets className="w-6 h-6 text-[#17324D]/25 animate-pulse" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="min-h-screen bg-[#F5FAFC]">
       <div className="max-w-2xl mx-auto px-4 py-6 sm:py-8 space-y-4 pb-24">
         <header className="flex items-center justify-between mb-2">
           <div>
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full bg-teal-700 flex items-center justify-center flex-shrink-0">
+              <div className="w-7 h-7 rounded-full bg-[#0B5FFF] flex items-center justify-center flex-shrink-0">
                 <Droplets className="w-4 h-4 text-white" />
               </div>
-              <h1 className="text-2xl font-semibold text-stone-900 tracking-tight">Anchor</h1>
+              <h1 className="text-2xl font-semibold text-[#17324D] tracking-tight">Anchor</h1>
             </div>
-            <p className="text-xs font-medium text-teal-700 mt-0.5">Pool chemistry, calibrated.</p>
-            <p className="text-xs text-stone-500 mt-0.5">
+            <p className="text-xs font-medium text-[#0B5FFF] mt-0.5">Pool chemistry, calibrated.</p>
+            <p className="text-xs text-[#17324D]/55 mt-0.5">
               {sorted.length} reading{sorted.length === 1 ? '' : 's'} · {Object.keys(calibrations).length} device{Object.keys(calibrations).length === 1 ? '' : 's'} calibrated
             </p>
           </div>
           {!showForm && (
             <button onClick={() => setShowForm(true)}
-              className="flex items-center gap-1.5 px-4 py-2 bg-teal-700 text-white text-sm font-medium rounded-md hover:bg-teal-800 shadow-sm">
+              className="flex items-center gap-1.5 px-4 py-2 bg-[#0B5FFF] text-white text-sm font-medium rounded-md hover:bg-[#094ED1] shadow-sm">
               <Plus className="w-4 h-4" />
               New
             </button>
@@ -1267,17 +1275,17 @@ export default function App() {
         {readings.length > 0 && <Trends readings={readings} targets={targets} />}
 
         {readings.length > 0 && (
-          <div className="bg-white border border-stone-200 rounded-lg overflow-hidden">
+          <div className="bg-white border border-[#D7E3EA] rounded-lg overflow-hidden">
             <button onClick={() => setHistoryOpen(!historyOpen)}
-              className="w-full px-5 py-4 flex items-center justify-between hover:bg-stone-50">
-              <span className="text-sm font-medium text-stone-900">History</span>
+              className="w-full px-5 py-4 flex items-center justify-between hover:bg-[#F5FAFC]">
+              <span className="text-sm font-medium text-[#17324D]">History</span>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-stone-500">{readings.length} total</span>
-                {historyOpen ? <ChevronUp className="w-4 h-4 text-stone-400" /> : <ChevronDown className="w-4 h-4 text-stone-400" />}
+                <span className="text-xs text-[#17324D]/55">{readings.length} total</span>
+                {historyOpen ? <ChevronUp className="w-4 h-4 text-[#17324D]/40" /> : <ChevronDown className="w-4 h-4 text-[#17324D]/40" />}
               </div>
             </button>
             {historyOpen && (
-              <div className="border-t border-stone-100">
+              <div className="border-t border-[#D7E3EA]">
                 {sorted.map(r => (
                   <HistoryRow key={r.id} reading={r} targets={targets} calibrations={calibrations}
                     onDelete={deleteReading} expanded={expandedId === r.id}
@@ -1292,7 +1300,7 @@ export default function App() {
 
         <BackupCard readings={readings} targets={targets} onRestore={restoreBackup} />
 
-        <div className="text-[10px] text-stone-400 text-center pt-4 leading-relaxed">
+        <div className="text-[10px] text-[#17324D]/40 text-center pt-4 leading-relaxed">
           Ref = Pool Store (ClearCare) · T2 Photometer · T3 Manual/Strip Reader · T4 Strips/HydroComm<br />
           Calibration pairs readings within {PAIR_WINDOW_HOURS}h of a reference sample.
         </div>
