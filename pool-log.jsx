@@ -4,7 +4,7 @@ import {
 } from 'recharts';
 import {
   Plus, Trash2, ChevronDown, ChevronUp, AlertCircle, CheckCircle2, X, Pencil,
-  Droplets, Sparkles, RefreshCw, ArrowRight, Beaker, Camera, Download, Upload
+  Droplets, Sparkles, RefreshCw, ArrowRight, Beaker, Camera, Download, Upload, Image
 } from 'lucide-react';
 
 /* ---------- Brand palette ----------
@@ -409,17 +409,29 @@ function EntryForm({ onSave, onCancel, calibrations }) {
           </div>
         ) : (
           <>
-            <label className="flex items-center justify-center gap-2 px-3 py-2 bg-white border border-teal-300 rounded-md text-sm font-medium text-teal-800 hover:bg-teal-50 cursor-pointer transition-colors">
-              <Camera className="w-4 h-4" />
-              Extract from photo
-              <input
-                type="file"
-                accept="image/*"
-                capture="environment"
-                onChange={handlePhotoUpload}
-                className="hidden"
-              />
-            </label>
+            <div className="flex gap-2">
+              <label className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-white border border-teal-300 rounded-md text-sm font-medium text-teal-800 hover:bg-teal-50 cursor-pointer transition-colors">
+                <Camera className="w-4 h-4" />
+                Take photo
+                <input
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  onChange={handlePhotoUpload}
+                  className="hidden"
+                />
+              </label>
+              <label className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-white border border-teal-300 rounded-md text-sm font-medium text-teal-800 hover:bg-teal-50 cursor-pointer transition-colors">
+                <Image className="w-4 h-4" />
+                Choose photo
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePhotoUpload}
+                  className="hidden"
+                />
+              </label>
+            </div>
             <p className="text-[11px] text-stone-500 text-center mt-1.5">
               Photometer screen, HydroComm app, pool store printout, or test strip
             </p>
