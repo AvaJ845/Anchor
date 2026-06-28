@@ -937,14 +937,45 @@ function Trends({ readings, targets }) {
 
 /* ---------- Targets editor ---------- */
 
+function targetsToStrings(targets) {
+  const out = {};
+  PARAM_KEYS.forEach(p => {
+    out[p] = { min: String(targets[p].min), target: String(targets[p].target), max: String(targets[p].max) };
+  });
+  return out;
+}
+
+function validateTargets(local) {
+  for (const p of PARAM_KEYS) {
+    const [sMin, sMax] = PARAMS[p].scale;
+    const min = parseFloat(local[p].min);
+    const target = parseFloat(local[p].target);
+    const max = parseFloat(local[p].max);
+    if ([min, target, max].some(v => isNaN(v))) return `${PARAMS[p].short}: all fields must be numbers.`;
+    if (min > max) return `${PARAMS[p].short}: min can't be greater than max.`;
+    if (target < min || target > max) return `${PARAMS[p].short}: target must be between min and max.`;
+    if (min < sMin || max > sMax) return `${PARAMS[p].short}: values must stay within ${sMin}–${sMax}.`;
+  }
+  return null;
+}
+
 function TargetsEditor({ targets, onSave }) {
   const [editing, setEditing] = useState(false);
-  const [local, setLocal] = useState(targets);
-  useEffect(() => { setLocal(targets); }, [targets]);
+  const [local, setLocal] = useState(() => targetsToStrings(targets));
+  useEffect(() => { setLocal(targetsToStrings(targets)); }, [targets]);
   const update = (p, field, v) => {
-    setLocal(prev => ({ ...prev, [p]: { ...prev[p], [field]: parseFloat(v) || 0 } }));
+    setLocal(prev => ({ ...prev, [p]: { ...prev[p], [field]: v } }));
   };
-  const save = () => { onSave(local); setEditing(false); };
+  const error = validateTargets(local);
+  const save = () => {
+    if (error) return;
+    const parsed = {};
+    PARAM_KEYS.forEach(p => {
+      parsed[p] = { min: parseFloat(local[p].min), target: parseFloat(local[p].target), max: parseFloat(local[p].max) };
+    });
+    onSave(parsed);
+    setEditing(false);
+  };
 
   return (
     <div className="bg-white border border-stone-200 rounded-lg overflow-hidden">
@@ -978,11 +1009,15 @@ function TargetsEditor({ targets, onSave }) {
               </div>
             ))}
           </div>
+          {error && (
+            <p className="text-xs text-red-700 bg-red-50 border border-red-200 rounded px-2 py-1.5 mt-3">{error}</p>
+          )}
           <div className="flex gap-2 mt-5">
-            <button onClick={save} className="flex-1 px-4 py-2 bg-teal-700 text-white text-sm font-medium rounded-md hover:bg-teal-800">
+            <button onClick={save} disabled={!!error}
+              className="flex-1 px-4 py-2 bg-teal-700 text-white text-sm font-medium rounded-md hover:bg-teal-800 disabled:bg-stone-200 disabled:text-stone-400 disabled:cursor-not-allowed">
               Save targets
             </button>
-            <button onClick={() => setLocal(DEFAULT_TARGETS)}
+            <button onClick={() => setLocal(targetsToStrings(DEFAULT_TARGETS))}
               className="px-4 py-2 text-stone-600 text-sm font-medium hover:bg-stone-100 rounded-md">
               Reset defaults
             </button>
