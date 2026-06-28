@@ -4,7 +4,7 @@ import {
 } from 'recharts';
 import {
   Plus, Trash2, ChevronDown, ChevronUp, AlertCircle, CheckCircle2, X, Pencil,
-  Droplets, Sparkles, RefreshCw, ArrowRight, Beaker, Camera
+  Droplets, Sparkles, RefreshCw, ArrowRight, Beaker, Camera, Download, Upload
 } from 'lucide-react';
 
 /* ---------- Brand palette ----------
@@ -1041,6 +1041,106 @@ function TargetsEditor({ targets, onSave }) {
   );
 }
 
+/* ---------- Backup & restore ----------
+   window.storage is whatever the host environment provides — its durability
+   across refreshes, sessions, or platform updates isn't something this app
+   controls. A local file export/import gives an escape hatch that doesn't
+   depend on that host at all. */
+
+function downloadBackup(readings, targets) {
+  const payload = { exportedAt: new Date().toISOString(), readings, targets };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `pool-log-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function parseBackupFile(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(reader.result);
+        if (!Array.isArray(data.readings)) throw new Error();
+        if (data.targets != null && typeof data.targets !== 'object') throw new Error();
+        resolve(data);
+      } catch {
+        reject(new Error("That doesn't look like a Pool Log backup file."));
+      }
+    };
+    reader.onerror = () => reject(new Error('Could not read that file.'));
+    reader.readAsText(file);
+  });
+}
+
+function BackupCard({ readings, targets, onRestore }) {
+  const [open, setOpen] = useState(false);
+  const [error, setError] = useState(null);
+  const [restored, setRestored] = useState(null);
+
+  const handleFile = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    setError(null);
+    setRestored(null);
+    try {
+      const data = await parseBackupFile(file);
+      onRestore(data);
+      setRestored({ count: data.readings.length });
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  return (
+    <div className="bg-white border border-stone-200 rounded-lg overflow-hidden">
+      <button onClick={() => setOpen(!open)} className="w-full px-5 py-4 flex items-center justify-between hover:bg-stone-50">
+        <div className="flex items-center gap-2">
+          <Download className="w-4 h-4 text-stone-400" />
+          <span className="text-sm font-medium text-stone-900">Backup &amp; restore</span>
+        </div>
+        {open ? <ChevronUp className="w-4 h-4 text-stone-400" /> : <ChevronDown className="w-4 h-4 text-stone-400" />}
+      </button>
+      {open && (
+        <div className="px-5 pb-5 border-t border-stone-100">
+          <p className="text-xs text-stone-500 mt-3 mb-4">
+            Download a backup occasionally so your readings aren't only ever stored in one place. Restoring replaces current readings and targets with the backup's contents.
+          </p>
+          <div className="flex gap-2">
+            <button onClick={() => downloadBackup(readings, targets)} disabled={readings.length === 0}
+              className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 bg-teal-700 text-white text-sm font-medium rounded-md hover:bg-teal-800 disabled:bg-stone-200 disabled:text-stone-400 disabled:cursor-not-allowed">
+              <Download className="w-4 h-4" />
+              Download backup
+            </button>
+            <label className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 border border-stone-200 text-stone-700 text-sm font-medium rounded-md hover:bg-stone-50 cursor-pointer">
+              <Upload className="w-4 h-4" />
+              Restore from file
+              <input type="file" accept="application/json" onChange={handleFile} className="hidden" />
+            </label>
+          </div>
+          {restored && (
+            <div className="mt-3 px-2 py-1.5 bg-emerald-50 border border-emerald-200 rounded text-[11px] text-emerald-800 flex items-center gap-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
+              Restored {restored.count} reading{restored.count === 1 ? '' : 's'} from backup.
+            </div>
+          )}
+          {error && (
+            <div className="mt-3 px-2 py-1.5 bg-red-50 border border-red-200 rounded text-[11px] text-red-800">
+              {error}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ---------- App ---------- */
 
 export default function App() {
@@ -1082,6 +1182,10 @@ export default function App() {
     setShowForm(false);
   };
   const deleteReading = (id) => saveReadings(readings.filter(r => r.id !== id));
+  const restoreBackup = (data) => {
+    saveReadings(data.readings.slice().sort((a, b) => b.timestamp - a.timestamp));
+    if (data.targets) saveTargets({ ...DEFAULT_TARGETS, ...data.targets });
+  };
 
   const sorted = useMemo(() => [...readings].sort((a, b) => b.timestamp - a.timestamp), [readings]);
   const latest = sorted[0];
@@ -1158,6 +1262,8 @@ export default function App() {
         )}
 
         <TargetsEditor targets={targets} onSave={saveTargets} />
+
+        <BackupCard readings={readings} targets={targets} onRestore={restoreBackup} />
 
         <div className="text-[10px] text-stone-400 text-center pt-4 leading-relaxed">
           Ref = Pool Store (ClearCare) · T2 Photometer · T3 Manual/Strip Reader · T4 Strips/HydroComm<br />
