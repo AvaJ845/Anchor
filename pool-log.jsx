@@ -201,6 +201,42 @@ function adjustedValue(rawValue, cal, param) {
   return rawValue + cal.meanOffset;
 }
 
+// How much each trust level is worth toward a reading's confidence score.
+// Not a statistical probability — a deliberately coarse, explainable weight
+// so the badge can't imply more precision than the underlying calibration has.
+const TRUST_SCORE = {
+  trusted: 95, developing: 65, stale: 50, noisy: 45,
+  insufficient: 35, none: 30, inconsistent: 20,
+};
+
+// A reference reading (pool store) IS the ground truth being calibrated
+// against — there's nothing to be "confident" about relative to itself.
+function confidenceScore(reading, calibrations) {
+  if (isReference(reading.source)) return null;
+  const cal = calibrations[reading.source];
+  const params = PARAM_KEYS.filter(p => reading[p] != null);
+  if (params.length === 0) return null;
+  const scores = params.map(p => TRUST_SCORE[trustLevel(cal?.[p], p)]);
+  return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+}
+
+function ConfidenceBadge({ score }) {
+  if (score == null) return null;
+  const tier = score >= 80
+    ? { label: 'High confidence', color: 'bg-[#27AE60]/15 text-[#1E8449] border-[#27AE60]/30' }
+    : score >= 50
+    ? { label: 'Some confidence', color: 'bg-[#FF7A59]/15 text-[#B3401F] border-[#FF7A59]/30' }
+    : { label: 'Low confidence', color: 'bg-[#D64545]/15 text-[#A3282A] border-[#D64545]/30' };
+  return (
+    <span
+      title={`${tier.label} — based on this device's calibration trust across the params in this reading`}
+      className={`inline-flex items-center gap-1 text-[10px] font-medium uppercase tracking-wider px-1.5 py-0.5 rounded border ${tier.color}`}
+    >
+      Confidence {score}%
+    </span>
+  );
+}
+
 /* ---------- UI primitives ---------- */
 
 function RangeBar({ value, range, scale }) {
@@ -282,6 +318,7 @@ function StatusCard({ latest, targets, calibrations }) {
   const tcEff = usesAdjusted ? adjustedValue(latest.tc, srcCal?.tc, 'tc') ?? latest.tc : latest.tc;
   const cc = fcEff != null && tcEff != null ? +(tcEff - fcEff).toFixed(2) : null;
   const ccWarn = cc != null && cc > 0.5;
+  const confidence = confidenceScore(latest, calibrations);
 
   return (
     <div className="bg-white border border-[#D7E3EA] rounded-lg overflow-hidden">
@@ -296,6 +333,7 @@ function StatusCard({ latest, targets, calibrations }) {
                 Adjusted
               </span>
             )}
+            <ConfidenceBadge score={confidence} />
           </div>
         </div>
         {issues.length === 0 ? (
