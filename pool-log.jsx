@@ -7,6 +7,19 @@ import {
   Droplets, Sparkles, RefreshCw, ArrowRight, Beaker, Camera
 } from 'lucide-react';
 
+/* ---------- Brand palette ----------
+   Deep Stone   stone-900  #1c1917  headings, primary text
+   Pool Teal    teal-700   #0f766e  primary actions, brand accent, "trusted/adjusted" tag
+   Leaf Green   emerald-*  #047857  in-range / ok / trusted calibration
+   Sun Gold     amber-*    #b45309  low / caution / noisy calibration
+   Coral Red    red-*      #991b1b  high / alert / inconsistent calibration
+   Tide Orange  orange-*   #c2410c  calibration gone stale, needs re-verifying
+   Sand         stone-50   #fafaf9  app background, neutral surfaces
+   White        white      #ffffff  cards
+   Every status/trust color in the UI maps to one of these six accents —
+   no ad hoc hues outside this set.
+------------------------------------ */
+
 /* ---------- Constants ---------- */
 
 const PARAMS = {
@@ -160,7 +173,7 @@ function trustLevel(cal, param) {
 const TRUST_INFO = {
   trusted:      { label: 'Trusted',          color: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
   stale:        { label: 'Re-verify',        color: 'bg-orange-100 text-orange-800 border-orange-200' },
-  developing:   { label: 'Developing',       color: 'bg-sky-100 text-sky-800 border-sky-200' },
+  developing:   { label: 'Developing',       color: 'bg-teal-100 text-teal-800 border-teal-200' },
   noisy:        { label: 'High variance',    color: 'bg-amber-100 text-amber-800 border-amber-200' },
   inconsistent: { label: 'Sign flipped',     color: 'bg-red-100 text-red-800 border-red-200' },
   insufficient: { label: 'Need more pairs',  color: 'bg-stone-100 text-stone-600 border-stone-200' },
