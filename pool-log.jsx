@@ -1053,7 +1053,7 @@ function downloadBackup(readings, targets) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `pool-log-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  a.download = `anchor-backup-${new Date().toISOString().slice(0, 10)}.json`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -1070,7 +1070,7 @@ function parseBackupFile(file) {
         if (data.targets != null && typeof data.targets !== 'object') throw new Error();
         resolve(data);
       } catch {
-        reject(new Error("That doesn't look like a Pool Log backup file."));
+        reject(new Error("That doesn't look like an Anchor backup file."));
       }
     };
     reader.onerror = () => reject(new Error('Could not read that file.'));
@@ -1213,7 +1213,13 @@ export default function App() {
       <div className="max-w-2xl mx-auto px-4 py-6 sm:py-8 space-y-4 pb-24">
         <header className="flex items-center justify-between mb-2">
           <div>
-            <h1 className="text-2xl font-semibold text-stone-900 tracking-tight">Pool Log</h1>
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-full bg-teal-700 flex items-center justify-center flex-shrink-0">
+                <Droplets className="w-4 h-4 text-white" />
+              </div>
+              <h1 className="text-2xl font-semibold text-stone-900 tracking-tight">Anchor</h1>
+            </div>
+            <p className="text-xs font-medium text-teal-700 mt-0.5">Pool chemistry, calibrated.</p>
             <p className="text-xs text-stone-500 mt-0.5">
               {sorted.length} reading{sorted.length === 1 ? '' : 's'} · {Object.keys(calibrations).length} device{Object.keys(calibrations).length === 1 ? '' : 's'} calibrated
             </p>
