@@ -23,23 +23,29 @@ import {
 /* ---------- Constants ---------- */
 
 const PARAMS = {
-  fc:  { label: 'Free Chlorine',     short: 'FC',  unit: 'ppm', step: 0.1, decimals: 1, scale: [0, 8]   },
-  tc:  { label: 'Total Chlorine',    short: 'TC',  unit: 'ppm', step: 0.1, decimals: 1, scale: [0, 8]   },
-  ph:  { label: 'pH',                short: 'pH',  unit: '',    step: 0.1, decimals: 1, scale: [6, 9]   },
-  ta:  { label: 'Total Alkalinity',  short: 'TA',  unit: 'ppm', step: 1,   decimals: 0, scale: [0, 200] },
-  ch:  { label: 'Calcium Hardness',  short: 'CH',  unit: 'ppm', step: 10,  decimals: 0, scale: [0, 700] },
-  cya: { label: 'Cyanuric Acid',     short: 'CYA', unit: 'ppm', step: 1,   decimals: 0, scale: [0, 100] },
+  fc:   { label: 'Free Chlorine',              short: 'FC',   unit: 'ppm', step: 0.1, decimals: 1, scale: [0, 8]    },
+  tc:   { label: 'Total Chlorine',             short: 'TC',   unit: 'ppm', step: 0.1, decimals: 1, scale: [0, 8]    },
+  ph:   { label: 'pH',                         short: 'pH',   unit: '',    step: 0.1, decimals: 1, scale: [6, 9]    },
+  ta:   { label: 'Total Alkalinity',           short: 'TA',   unit: 'ppm', step: 1,   decimals: 0, scale: [0, 200]  },
+  ch:   { label: 'Calcium Hardness',           short: 'CH',   unit: 'ppm', step: 10,  decimals: 0, scale: [0, 700]  },
+  cya:  { label: 'Cyanuric Acid',              short: 'CYA',  unit: 'ppm', step: 1,   decimals: 0, scale: [0, 100]  },
+  orp:  { label: 'Oxidation-Reduction Potential', short: 'ORP', unit: 'mV', step: 10, decimals: 0, scale: [400, 900] },
+  tds:  { label: 'Total Dissolved Solids',     short: 'TDS',  unit: 'ppm', step: 50,  decimals: 0, scale: [0, 3000] },
+  temp: { label: 'Water Temperature',          short: 'Temp', unit: '°F',  step: 1,   decimals: 0, scale: [50, 100] },
 };
 
 const PARAM_KEYS = Object.keys(PARAMS);
 
 const DEFAULT_TARGETS = {
-  fc:  { min: 1,   max: 4,   target: 2.5 },
-  tc:  { min: 1,   max: 4,   target: 2.5 },
-  ph:  { min: 7.2, max: 7.8, target: 7.5 },
-  ta:  { min: 80,  max: 120, target: 100 },
-  ch:  { min: 200, max: 500, target: 350 },
-  cya: { min: 20,  max: 50,  target: 35  },
+  fc:   { min: 1,   max: 4,    target: 2.5 },
+  tc:   { min: 1,   max: 4,    target: 2.5 },
+  ph:   { min: 7.2, max: 7.8,  target: 7.5 },
+  ta:   { min: 80,  max: 120,  target: 100 },
+  ch:   { min: 200, max: 500,  target: 350 },
+  cya:  { min: 20,  max: 50,   target: 35  },
+  orp:  { min: 650, max: 750,  target: 700 },
+  tds:  { min: 0,   max: 2000, target: 1000 },
+  temp: { min: 78,  max: 84,   target: 81  },
 };
 
 const SOURCES = [
@@ -56,7 +62,7 @@ const sourceTier  = (v) => SOURCES.find(s => s.value === v)?.tier ?? 5;
 const isReference = (v) => SOURCES.find(s => s.value === v)?.isReference === true;
 
 const PAIR_WINDOW_HOURS = 24; // pair readings within this window for calibration
-const STD_THRESHOLDS = { fc: 0.4, tc: 0.4, ph: 0.15, ta: 12, ch: 35, cya: 8 };
+const STD_THRESHOLDS = { fc: 0.4, tc: 0.4, ph: 0.15, ta: 12, ch: 35, cya: 8, orp: 25, tds: 100, temp: 2 };
 const STALE_AFTER_DAYS = 45; // re-verify trust if no fresh reference pair in this long
 
 /* ---------- Helpers ---------- */
@@ -694,8 +700,11 @@ Schema:
   "ta": number,          // Total Alkalinity ppm (Alk)
   "ch": number,          // Calcium Hardness ppm (photometer TH)
   "cya": number,         // Cyanuric Acid ppm
+  "orp": number,         // Oxidation-Reduction Potential, mV (HydroComm ORP)
+  "tds": number,         // Total Dissolved Solids, ppm (HydroComm TDS)
+  "temp": number,        // Water temperature, °F (HydroComm Temperature)
   "source": string,      // "pool-store" | "photometer" | "hydrocomm" | "strips" | "manual-kit"
-  "notes": string,       // anything notable, e.g. "CYA reported as <40", "ORP 593 mV from HydroComm"
+  "notes": string,       // anything notable, e.g. "CYA reported as <40", "HydroComm shows pH as Fair"
   "confidence": "high" | "medium" | "low"
 }
 
